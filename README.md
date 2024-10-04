@@ -5,7 +5,7 @@
 ```bash
 export MODEL_PATH=/data
 git clone https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct $MODEL_PATH/Meta-Llama-3-8B-Instruct
-git clone https://github.com/MasterJH5574/tensorrt-demo.git
+git clone https://github.com/MasterJH5574/tensorrt-demo.git --branch 0.13.0 --single-branch
 
 docker pull nvcr.io/nvidia/tritonserver:24.09-trtllm-python-py3
 docker run --shm-size 32g -v $MODEL_PATH:/models -v $PWD/tensorrt-demo:/tensorrt-demo --workdir / -p 8123:8123 --gpus all -it $(docker image ls | grep 24.09 | awk '{print $3}') /bin/bash
@@ -29,7 +29,22 @@ wget https://raw.githubusercontent.com/triton-inference-server/tensorrtllm_backe
 python3 launch_triton_server.py --world_size=1 --model_repo=/tensorrt-demo/triton_model_repo --http_port 8123
 ```
 
-### Step 4. Run benchmark
+### Step 4. Send request
+
+As per https://github.com/triton-inference-server/tensorrtllm_backend#send-an-inference-request:
+
+```bash
+curl -X POST 127.0.0.1:8123/v2/models/ensemble/generate -d '{"text_input": "What is machine learning?", "max_tokens": 20, "bad_words": ["intelligence", "model"], "stop_words": ["focuses", "learn"], "pad_id": 2, "end_id": 2}'
+```
+
+It gives error response
+```
+{"error":"generate expects model to produce exactly 1 response, use generate stream for model that generates various number of responses"}
+```
+
+### Step 5. Run benchmark
+
+No request is successfully processed when running `mlc_llm.bench` as follows; all requests receive no output from `/v2/models/ensemble/generate_stream`.
 
 ```bash
 # Create conda env (if run outside the docker container)
