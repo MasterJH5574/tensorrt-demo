@@ -26,13 +26,18 @@
 
 name: "ensemble"
 platform: "ensemble"
-max_batch_size: 512
-
+max_batch_size: 2048
 input [
   {
     name: "text_input"
     data_type: TYPE_STRING
     dims: [ -1 ]
+  },
+  {
+    name: "decoder_text_input"
+    data_type: TYPE_STRING
+    dims: [ -1 ]
+    optional: true
   },
   {
     name: "max_tokens"
@@ -172,7 +177,6 @@ input [
       optional: true
   }
 ]
-
 output [
   {
     name: "text_output"
@@ -200,7 +204,6 @@ output [
     dims: [ -1, -1, -1 ]
   }
 ]
-
 ensemble_scheduling {
   step [
     {
@@ -209,6 +212,10 @@ ensemble_scheduling {
       input_map {
         key: "QUERY"
         value: "text_input"
+      }
+      input_map {
+        key: "DECODER_QUERY"
+        value: "decoder_text_input"
       }
       input_map {
         key: "REQUEST_OUTPUT_LEN"
@@ -247,6 +254,14 @@ ensemble_scheduling {
         value: "_INPUT_ID"
       }
       output_map {
+        key: "REQUEST_DECODER_INPUT_LEN"
+        value: "_REQUEST_DECODER_INPUT_LEN"
+      }
+      output_map {
+        key: "DECODER_INPUT_ID"
+        value: "_DECODER_INPUT_ID"
+      }
+      output_map {
         key: "REQUEST_OUTPUT_LEN"
         value: "_REQUEST_OUTPUT_LEN"
       }
@@ -279,8 +294,16 @@ ensemble_scheduling {
         value: "_INPUT_ID"
       }
       input_map {
+        key: "decoder_input_ids"
+        value: "_DECODER_INPUT_ID"
+      }
+      input_map {
         key: "input_lengths"
         value: "_REQUEST_INPUT_LEN"
+      }
+      input_map {
+        key: "decoder_input_lengths"
+        value: "_REQUEST_DECODER_INPUT_LEN"
       }
       input_map {
         key: "request_output_len"

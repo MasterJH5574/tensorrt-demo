@@ -26,13 +26,18 @@
 
 name: "preprocessing"
 backend: "python"
-max_batch_size: 512
-
+max_batch_size: 2048
 input [
     {
         name: "QUERY"
         data_type: TYPE_STRING
         dims: [ -1 ]
+    },
+    {
+        name: "DECODER_QUERY"
+        data_type: TYPE_STRING
+        dims: [ -1 ]
+        optional: true
     },
     {
         name: "REQUEST_OUTPUT_LEN"
@@ -76,7 +81,6 @@ input [
         optional: true
     }
 ]
-
 output [
     {
         name: "INPUT_ID"
@@ -85,6 +89,16 @@ output [
     },
     {
         name: "REQUEST_INPUT_LEN"
+        data_type: TYPE_INT32
+        dims: [ 1 ]
+    },
+    {
+        name: "DECODER_INPUT_ID"
+        data_type: TYPE_INT32
+        dims: [ -1 ]
+    },
+    {
+        name: "REQUEST_DECODER_INPUT_LEN"
         data_type: TYPE_INT32
         dims: [ 1 ]
     },
@@ -123,7 +137,14 @@ output [
 parameters {
   key: "tokenizer_dir"
   value: {
-    string_value: "/root/Meta-Llama-3-8B-Instruct"
+    string_value: "/models/Meta-Llama-3-8B-Instruct"
+  }
+}
+
+parameters {
+  key: "add_special_tokens"
+  value: {
+    string_value: "${add_special_tokens}"
   }
 }
 

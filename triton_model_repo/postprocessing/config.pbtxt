@@ -26,8 +26,7 @@
 
 name: "postprocessing"
 backend: "python"
-max_batch_size: 512
-
+max_batch_size: 2048
 input [
   {
     name: "TOKENS_BATCH"
@@ -64,7 +63,6 @@ input [
     optional: true
   }
 ]
-
 output [
   {
     name: "OUTPUT"
@@ -96,7 +94,7 @@ output [
 parameters {
   key: "tokenizer_dir"
   value: {
-    string_value: "/root/Meta-Llama-3-8B-Instruct"
+    string_value: "/models/Meta-Llama-3-8B-Instruct"
   }
 }
 
